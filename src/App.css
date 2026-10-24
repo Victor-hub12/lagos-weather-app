@@ -1,0 +1,94 @@
+#root {
+  min-height: 100vh;
+}
+
+.weather-page {
+  display: grid;
+  min-height: 100vh;
+  padding: 24px;
+  place-items: center;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgb(112 189 255 / 32%), transparent 35%),
+    linear-gradient(145deg, #edf7ff 0%, #d9eaff 48%, #c7dcfa 100%);
+  box-sizing: border-box;
+}
+
+.weather-card {
+  width: min(100%, 520px);
+  padding: clamp(32px, 8vw, 64px);
+  border: 1px solid rgb(255 255 255 / 70%);
+  border-radius: 28px;
+  background: rgb(255 255 255 / 78%);
+  box-shadow: 0 24px 70px rgb(36 79 125 / 16%);
+  box-sizing: border-box;
+  text-align: center;
+  backdrop-filter: blur(12px);
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: #5079a5;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.weather-card h1 {
+  margin: 0;
+  color: #163554;
+  font-size: clamp(2rem, 7vw, 3rem);
+  font-weight: 650;
+  letter-spacing: -0.06em;
+  line-height: 1.1;
+}
+
+.location-note {
+  margin: 12px 0 36px;
+  color: #617991;
+  font-size: 1rem;
+}
+
+.weather-status,
+.weather-error {
+  margin: 42px 0;
+  color: #315676;
+  font-size: 1rem;
+}
+
+.weather-error {
+  color: #a12c3a;
+}
+
+.temperature {
+  margin: 0;
+  color: #153d68;
+  font-size: clamp(5rem, 22vw, 8.5rem);
+  font-weight: 300;
+  letter-spacing: -0.09em;
+  line-height: 1;
+}
+
+.temperature span {
+  margin-left: 8px;
+  color: #5480ad;
+  font-size: 0.42em;
+  vertical-align: top;
+}
+
+.feels-like {
+  margin: 18px 0 0;
+  color: #315676;
+  font-size: 1.05rem;
+}
+
+.updated-at {
+  margin: 10px 0 0;
+  color: #71869a;
+  font-size: 0.85rem;
+}
+
+.weather-source {
+  margin: 44px 0 0;
+  color: #8295a8;
+  font-size: 0.78rem;
+}

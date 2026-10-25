@@ -13,6 +13,12 @@ type GeocodingResponse = {
   results?: Location[]
 }
 
+type DailyForecast = {
+  date: string
+  minimum: number
+  maximum: number
+}
+
 type ForecastResponse = {
   current?: {
     temperature_2m: number
@@ -22,12 +28,31 @@ type ForecastResponse = {
   current_units?: {
     temperature_2m: string
   }
+  daily?: {
+    time: string[]
+    temperature_2m_min: number[]
+    temperature_2m_max: number[]
+  }
+  daily_units?: {
+    temperature_2m_min: string
+    temperature_2m_max: string
+  }
+}
+
+function formatForecastDate(date: string) {
+  const [year, month, day] = date.split('-').map(Number)
+  return new Date(year, month - 1, day).toLocaleDateString(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  })
 }
 
 function App() {
   const [temperature, setTemperature] = useState<number | null>(null)
   const [feelsLike, setFeelsLike] = useState<number | null>(null)
   const [temperatureUnit, setTemperatureUnit] = useState('°C')
+  const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([])
   const [updatedAt, setUpdatedAt] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -55,6 +80,8 @@ function App() {
         latitude: String(location.latitude),
         longitude: String(location.longitude),
         current: 'temperature_2m,apparent_temperature',
+        daily: 'temperature_2m_min,temperature_2m_max',
+        forecast_days: '4',
         timezone: 'auto',
       }).toString()
 
@@ -73,9 +100,32 @@ function App() {
         throw new Error(`The current temperature for ${location.name} is unavailable.`)
       }
 
+      const daily = forecastData.daily
+      const dailyForecastData = daily?.time
+        .map((date, index) => ({
+          date,
+          minimum: daily.temperature_2m_min[index],
+          maximum: daily.temperature_2m_max[index],
+        }))
+        .filter((day) => day.date > daily.time[0])
+        .slice(0, 3)
+
+      if (
+        !dailyForecastData ||
+        dailyForecastData.length !== 3 ||
+        dailyForecastData.some(
+          (day) =>
+            typeof day.minimum !== 'number' ||
+            typeof day.maximum !== 'number',
+        )
+      ) {
+        throw new Error(`The 3-day forecast for ${location.name} is unavailable.`)
+      }
+
       setTemperature(current.temperature_2m)
       setFeelsLike(current.apparent_temperature)
       setTemperatureUnit(forecastData.current_units?.temperature_2m ?? '°C')
+      setDailyForecast(dailyForecastData)
       setUpdatedAt(current.time)
     } catch (requestError) {
       if (!controller.signal.aborted) {
@@ -256,23 +306,45 @@ function App() {
             {error}
           </p>
         ) : (
-          <div className="weather-reading" aria-live="polite">
-            <p className="temperature">
-              {temperature}
-              <span>{temperatureUnit}</span>
-            </p>
-            {feelsLike !== null && (
-              <p className="feels-like">
-                Feels like {feelsLike}
-                {temperatureUnit}
+          <>
+            <div className="weather-reading" aria-live="polite">
+              <p className="temperature">
+                {temperature}
+                <span>{temperatureUnit}</span>
               </p>
-            )}
-            {updatedAt && (
-              <p className="updated-at">
-                Updated {updatedAt.replace('T', ' ')} local time
-              </p>
-            )}
-          </div>
+              {feelsLike !== null && (
+                <p className="feels-like">
+                  Feels like {feelsLike}
+                  {temperatureUnit}
+                </p>
+              )}
+              {updatedAt && (
+                <p className="updated-at">
+                  Updated {updatedAt.replace('T', ' ')} local time
+                </p>
+              )}
+            </div>
+            <section className="forecast" aria-labelledby="forecast-title">
+              <h2 id="forecast-title">Next 3 days</h2>
+              <ul className="forecast-list">
+                {dailyForecast.map((day) => (
+                  <li className="forecast-day" key={day.date}>
+                    <h3>{formatForecastDate(day.date)}</h3>
+                    <p className="forecast-high">
+                      <span className="visually-hidden">High</span>
+                      {day.maximum}
+                      {temperatureUnit}
+                    </p>
+                    <p className="forecast-low">
+                      <span className="visually-hidden">Low</span>
+                      {day.minimum}
+                      {temperatureUnit}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </>
         )}
 
         <p className="weather-source">Weather data by Open-Meteo</p>

@@ -48,6 +48,63 @@
   font-size: 1rem;
 }
 
+.city-search {
+  margin: 0 0 36px;
+  text-align: left;
+}
+
+.city-search label {
+  display: block;
+  margin-bottom: 8px;
+  color: #315676;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.city-search-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.city-search input {
+  min-width: 0;
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid #c5d7e8;
+  border-radius: 10px;
+  background: #fff;
+  color: #163554;
+  font: inherit;
+}
+
+.city-search input:focus-visible,
+.city-search button:focus-visible {
+  outline: 3px solid #75a9df;
+  outline-offset: 2px;
+}
+
+.city-search button {
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 10px;
+  background: #245b8e;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.city-search button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.search-feedback {
+  margin: 10px 0 0;
+  color: #315676;
+  font-size: 0.9rem;
+}
+
 .weather-status,
 .weather-error {
   margin: 42px 0;
